@@ -1,0 +1,33 @@
+server:
+  port: 8080
+spring:
+  cache:
+    type: redis
+    redis:
+      time-to-live: 60s
+      key-prefix: sms_
+  redis:
+    host: localhost
+    port: 6379
+
+  application:
+    name: reggie
+  datasource:
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      username: root
+      password: zxc758203
+      url: jdbc:mysql://localhost:3306/reggie?useUnicode=true&characterEncoding=UTF-8&serverTimeZone=UTC
+  servlet:
+    multipart:
+      max-file-size: 2MB
+mybatis-plus:
+  configuration:
+    #在映射实体或者属性时，将数据库中表名和字段名中的下划线去掉，按照驼峰命名法映射
+    map-underscore-to-camel-case: true
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: ASSIGN_ID
+file:
+  basepath: C:\Users\dell\Desktop\JAVA\img_reggie\
