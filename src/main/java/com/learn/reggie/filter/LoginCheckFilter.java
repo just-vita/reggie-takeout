@@ -1,8 +1,6 @@
 package com.learn.reggie.filter;
 
-import com.alibaba.fastjson.JSON;
 import com.learn.reggie.common.CommonThreadLocal;
-import com.learn.reggie.common.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.AntPathMatcher;
 
@@ -30,12 +28,6 @@ public class LoginCheckFilter implements Filter {
         String requestURI = request.getRequestURI();// /backend/index.html
 
         log.info("拦截到请求：{}", requestURI);
-        if (requestURI.startsWith("/backend") && !requestURI.startsWith("/backend/plugins/axios/axios.min.map") && request.getSession().getAttribute("user") != null) {
-            request.getSession().removeAttribute("user");
-        }
-        if (requestURI.startsWith("/front") && requestURI.startsWith(("/front/fonts/PingFangSC-Regular.ttf")) && requestURI.startsWith(("/front/fonts/PingFangSC-Medium.ttf")) && request.getSession().getAttribute("employee") != null) {
-            request.getSession().removeAttribute("employee");
-        }
 
         //定义不需要处理的请求路径
         String[] urls = new String[]{
@@ -57,17 +49,17 @@ public class LoginCheckFilter implements Filter {
             return;
         }
 
-        //4.1、判断登录状态，如果已登录，则直接放行
-        Object employeeId = request.getSession().getAttribute("employee");
-        if (employeeId != null) {
-
-            log.info("用户已登录后台，用户id为：{}", employeeId);
-
-            CommonThreadLocal.setEmployeeLocal((Long) employeeId);
-
-            filterChain.doFilter(request, response);
-            return;
-        }
+//        //4.1、判断登录状态，如果已登录，则直接放行
+//        Object employeeId = request.getSession().getAttribute("employee");
+//        if (employeeId != null) {
+//
+//            log.info("用户已登录后台，用户id为：{}", employeeId);
+//
+//            CommonThreadLocal.setEmployeeLocal((Long) employeeId);
+//
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
 
         //4.2、判断登录状态，如果已登录，则直接放行
         Object userId = request.getSession().getAttribute("user");
@@ -79,11 +71,12 @@ public class LoginCheckFilter implements Filter {
             filterChain.doFilter(request, response);
             return;
         }
+        filterChain.doFilter(request, response);
 
-        log.info("用户未登录");
-        //5、如果未登录则返回未登录结果，通过输出流方式向客户端页面响应数据
-        response.getWriter().write(JSON.toJSONString(R.error("NOTLOGIN")));
-        return;
+//        log.info("用户未登录");
+//        //5、如果未登录则返回未登录结果，通过输出流方式向客户端页面响应数据
+//        response.getWriter().write(JSON.toJSONString(R.error("NOTLOGIN")));
+//        return;
 
     }
 
