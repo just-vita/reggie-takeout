@@ -45,7 +45,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
             return R.error("账号已禁用");
         }
 
-        request.getSession().setAttribute("employee", login.getId());
+//        request.getSession().setAttribute("employee", login.getId());
 
         return R.success(login);
     }

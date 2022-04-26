@@ -1,6 +1,8 @@
 package com.learn.reggie.filter;
 
+import com.alibaba.fastjson.JSON;
 import com.learn.reggie.common.CommonThreadLocal;
+import com.learn.reggie.common.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.AntPathMatcher;
 
@@ -31,8 +33,13 @@ public class LoginCheckFilter implements Filter {
 
         //定义不需要处理的请求路径
         String[] urls = new String[]{
-                "/employee/login",
-                "/employee/logout",
+                "/login.html",
+                "/favicon.ico",
+                "/employee/**",
+                "/category/**",
+                "/setmeal/**",
+                "/dish/**",
+                "/order/**",
                 "/backend/**",
                 "/front/**",
                 "/user/sendMsg",
@@ -71,12 +78,11 @@ public class LoginCheckFilter implements Filter {
             filterChain.doFilter(request, response);
             return;
         }
-        filterChain.doFilter(request, response);
 
-//        log.info("用户未登录");
-//        //5、如果未登录则返回未登录结果，通过输出流方式向客户端页面响应数据
-//        response.getWriter().write(JSON.toJSONString(R.error("NOTLOGIN")));
-//        return;
+        log.info("用户未登录");
+        //5、如果未登录则返回未登录结果，通过输出流方式向客户端页面响应数据
+        response.getWriter().write(JSON.toJSONString(R.error("NOTLOGIN")));
+        return;
 
     }
 
