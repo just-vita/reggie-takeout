@@ -1,6 +1,6 @@
 package com.learn.reggie.config;
 
-import com.learn.reggie.service.UserService1;
+import com.learn.reggie.service.MyUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,11 +21,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private MyAccessDeniedHandler myAccessDeniedHandler;
     @Autowired
-    private UserService1 userService;
+    private MyUserService userService;
     @Autowired
     private DataSource datasource;
     @Autowired
     private PersistentTokenRepository tokenRepository;
+    @Autowired
+    private MyFailureHandler myFailureHandler;
 
     @Bean
     public PasswordEncoder pw(){
@@ -44,7 +46,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                .successForwardUrl("/success")
                 .successHandler(new MyAuthenticationSuccessHandler("/backend/index.html"))
 //                .failureForwardUrl("/error")
-                .failureHandler(new MyAuthenticationFailureHandler("/login.html"))
+//                .failureHandler(new MyAuthenticationFailureHandler("/login.html"))
+                .failureHandler(myFailureHandler)
                 .usernameParameter("username")
                 .passwordParameter("password");
 

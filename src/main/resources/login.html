@@ -36,6 +36,7 @@
             <el-input v-model="password" name="password" @type.native="submit" type="password" placeholder="密码" prefix-icon="iconfont icon-lock" maxlength="20"
                />
           </el-form-item>
+          <center><span ref="error" v-show="error" style="color: #FFFFFF;">登录失败，密码错误</span></center>
           <el-form-item style="width:100%;">
             <button type="submit" :loading="loading" @click="handleLogin" class="el-button login-btn" style="width:100%;">
                 <span v-if="!loading">登录</span>
@@ -71,16 +72,30 @@
           username: 'admin',
           password: '123456',
           loading: false,
-          checked: true
+          checked: true,
+          error: false
         }
       },
       computed: {
       },
       created() {
       },
+      mounted(){
+        if (window.location.search == "?error"){
+          this.$refs.error.style="color:red"
+          this.error = true
+        }
+      },
       methods: {
-        async handleLogin() {
+        handleLogin() {
           this.loading = true
+        },
+        test(){
+          if (window.location.search == "?error"){
+            this.html("123")
+            return true
+          }
+          return false
         }
       }
     })

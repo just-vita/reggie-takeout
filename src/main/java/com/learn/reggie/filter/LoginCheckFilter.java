@@ -34,6 +34,8 @@ public class LoginCheckFilter implements Filter {
         //定义不需要处理的请求路径
         String[] urls = new String[]{
                 "/login.html",
+                "/login",
+                "/login/**",
                 "/favicon.ico",
                 "/employee/**",
                 "/category/**",
