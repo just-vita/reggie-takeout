@@ -30,12 +30,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             } catch (IOException e) {
             }
             String username = loginData.get(getUsernameParameter());
-            String password = DigestUtils.md5DigestAsHex(loginData.get(getPasswordParameter()).getBytes());
+            String password = loginData.get(getPasswordParameter());
             if (username == null) {
                 username = "";
             }
             if (password == null) {
                 password = "";
+            }else {
+                password = DigestUtils.md5DigestAsHex(loginData.get(getPasswordParameter()).getBytes());
             }
             username = username.trim();
             UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
@@ -46,8 +48,5 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             return super.attemptAuthentication(request, response);
         }
     }
-
-
-
 
 }

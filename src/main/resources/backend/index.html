@@ -180,7 +180,7 @@
         methods: {
           logout() {
             logoutApi().then((res)=>{
-                localStorage.removeItem('userInfo')
+                localStorage.removeItem('token')
                 location.reload()
             })
           },

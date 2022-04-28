@@ -28,10 +28,8 @@ public class MyUserService implements UserDetailsService {
             throw new UsernameNotFoundException("username no find");
         }
 
-//        String password = passwordEncoder.encode("123456");
         String password = passwordEncoder.encode(employee.getPassword());
         employee.setPassword(password);
-//        String password = DigestUtils.md5DigestAsHex("123456".getBytes());
 
         return new LoginUser(employee);
     }

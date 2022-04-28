@@ -4,9 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.learn.reggie.common.R;
 import com.learn.reggie.entity.LoginUser;
+import com.learn.reggie.filter.JwtAuthenticationTokenFilter;
 import com.learn.reggie.filter.LoginFilter;
 import com.learn.reggie.service.MyUserService;
 import com.learn.reggie.utils.JwtUtil;
+import com.learn.reggie.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,6 +45,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private DataSource datasource;
     @Autowired
     private PersistentTokenRepository tokenRepository;
+    @Autowired
+    private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Bean
     public PasswordEncoder pw(){
@@ -55,22 +61,26 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .headers().frameOptions().sameOrigin();
 
         // 相关属性在loginFilter设置了
-        http.formLogin();
-//                .loginPage("/login.html")
+        http.formLogin()
+                .loginPage("/login.html");
 //                .successHandler(new MyAuthenticationSuccessHandler("/backend/index.html"))
 //                .failureHandler(myFailureHandler);
 
         http.addFilterAt(loginFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         http.authorizeRequests()
                 .antMatchers(HttpMethod.POST,"/login.html").permitAll()
                 .antMatchers("/backend/api/login.js").permitAll()
+                .antMatchers("/backend/plugins/**").permitAll()
+                .antMatchers("/backend/styles/**").permitAll()
+                .antMatchers("/backend/images/**").permitAll()
+                .antMatchers("/backend/js/**").permitAll()
                 .antMatchers("/login").permitAll()
-                .antMatchers("/backend/page/**").authenticated()
-                .antMatchers("/backend/api/**").authenticated()
-                .antMatchers("/backend/index.html").authenticated()
+//                .antMatchers("/backend/page/**").authenticated()
+//                .antMatchers("/backend/api/**").authenticated()
+//                .antMatchers("/backend/index.html").authenticated()
                 .anyRequest().permitAll();
-
 
         http.exceptionHandling()
                 .accessDeniedHandler(myAccessDeniedHandler);
@@ -108,11 +118,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 response.setContentType("application/json;charset=utf-8");
                 PrintWriter out = response.getWriter();
                 LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+
+                redisUtil.set("login:"+loginUser.getEmployee().getId(),loginUser);
+
                 Long id = loginUser.getEmployee().getId();
                 String token = JwtUtil.createToken(id.toString());
-//                HashMap<String, String> map = new HashMap<>();
-//                map.put("token",token);
-//                R<Map> ok = R.success(map);
                 R<String> ok = R.success(token);
                 String s = new ObjectMapper().writeValueAsString(ok);
                 out.write(s);

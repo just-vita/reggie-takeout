@@ -31,8 +31,11 @@ public class ServiceTest {
 
     @Test
     public void TokenCheck(){
-        Map<String, Object> map = JwtUtil.checkToken("eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NTEwNTg3NTEsInVzZXJJZCI6IjEyMyIsImlhdCI6MTY1MTA1NTE1MX0.-UfsDTWCn-_9UMkN7v4oEsyveDLC550sS9OiFPvSCsQ");
-        Object userId = map.get("userId");
-        System.out.println(userId);
+        Map<String, Object> map = JwtUtil.checkToken("eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NTExNDI4NTQsInVzZXJJZCI6IjEyMyIsImlhdCI6MTY1MTEzOTI1NH0.7XVBBqOjgj8x4xLPUHE-57Or1R96xYawhmj25yDNIR0");
+//        Object userId = map.get("userId");
+//        System.out.println(userId);
+        for (String s : map.keySet()) {
+            System.out.println(s+" : "+map.get(s));
+        }
     }
 }
