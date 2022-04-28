@@ -19,11 +19,6 @@ public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
 
-    @PostMapping("login")
-    public R<Employee> login(HttpServletRequest request, @RequestBody Employee employee){
-        return employeeService.login(request,employee);
-    }
-
     @PostMapping("logout")
     public R<String> logout(){
         return employeeService.logout();

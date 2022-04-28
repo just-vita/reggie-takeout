@@ -24,7 +24,7 @@
     <div class="login-box">
       <img src="/backend/images/login/test2.png" alt="">
       <div class="login-form">
-        <el-form action="/login" method="post">
+        <el-form action="/securityLogin" method="post">
           <div class="login-form-title">
             <img src="/backend/images/login/logo.png" style="width:139px;height:42px;" alt="" />
           </div>
@@ -90,13 +90,6 @@
         handleLogin() {
           this.loading = true
         },
-        test(){
-          if (window.location.search == "?error"){
-            this.html("123")
-            return true
-          }
-          return false
-        }
       }
     })
   </script>

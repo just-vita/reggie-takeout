@@ -9,7 +9,6 @@ import com.learn.reggie.entity.PageParam;
 import javax.servlet.http.HttpServletRequest;
 
 public interface EmployeeService extends IService<Employee> {
-    R<Employee> login(HttpServletRequest request, Employee employee);
 
     R<String> logout();
 

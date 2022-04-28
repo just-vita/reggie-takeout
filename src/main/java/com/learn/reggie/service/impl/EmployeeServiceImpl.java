@@ -17,38 +17,10 @@ import javax.servlet.http.HttpServletRequest;
 
 @Service
 public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> implements EmployeeService {
-
     @Autowired
     private EmployeeMapper employeeMapper;
     @Autowired
     private HttpServletRequest request;
-
-    @Override
-    public R<Employee> login(HttpServletRequest request, Employee employee) {
-        String password = employee.getPassword();
-        password = DigestUtils.md5DigestAsHex(password.getBytes());
-
-        LambdaQueryWrapper<Employee> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(Employee::getUsername, employee.getUsername());
-
-        Employee login = employeeMapper.selectOne(lqw);
-
-        if (login == null) {
-            return R.error("用户名不存在");
-        }
-
-        if (!login.getPassword().equals(password)) {
-            return R.error("密码错误");
-        }
-
-        if (login.getStatus() == 0) {
-            return R.error("账号已禁用");
-        }
-
-//        request.getSession().setAttribute("employee", login.getId());
-
-        return R.success(login);
-    }
 
     @Override
     public R<String> logout() {
@@ -60,6 +32,8 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     public R<String> add(Employee employee) {
 
         employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
+//        String password = passwordEncoder.encode("123456");
+//        employee.setPassword(password);
 
         employeeMapper.insert(employee);
 

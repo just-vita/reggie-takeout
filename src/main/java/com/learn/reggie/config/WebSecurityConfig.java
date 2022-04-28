@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -41,18 +42,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.formLogin()
                 .loginPage("/login.html")
-                .loginProcessingUrl("/login")
-//                .defaultSuccessUrl("/")
-//                .successForwardUrl("/success")
+//                .loginProcessingUrl("/securityLogin")
                 .successHandler(new MyAuthenticationSuccessHandler("/backend/index.html"))
-//                .failureForwardUrl("/error")
-//                .failureHandler(new MyAuthenticationFailureHandler("/login.html"))
-                .failureHandler(myFailureHandler)
-                .usernameParameter("username")
-                .passwordParameter("password");
+                .failureHandler(myFailureHandler);
 
         http.authorizeRequests()
                 .antMatchers(HttpMethod.POST,"/login.html").permitAll()
+                .antMatchers("/securityLogin").permitAll()
                 .antMatchers("/backend/page/**").authenticated()
                 .antMatchers("/backend/api/**").authenticated()
                 .antMatchers("/backend/index.html").authenticated()
@@ -69,8 +65,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.logout()
                 .logoutSuccessUrl("/login.html")
                 .logoutUrl("/logout");
-
-
     }
 
     @Bean
@@ -79,5 +73,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         jdbcTokenRepository.setDataSource(datasource);
 //        jdbcTokenRepository.setCreateTableOnStartup(true);
         return jdbcTokenRepository;
+    }
+
+    @Override
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 }
