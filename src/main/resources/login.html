@@ -17,102 +17,103 @@
       min-width: 1366px;
     }
   </style>
-</head> 
+</head>
 
 <body>
-  <div class="login" id="login-app">
-    <div class="login-box">
-      <img src="/backend/images/login/test2.png" alt="">
-      <div class="login-form">
-        <el-form action="/securityLogin" method="post">
-          <div class="login-form-title">
-            <img src="/backend/images/login/logo.png" style="width:139px;height:42px;" alt="" />
-          </div>
-          <el-form-item prop="username">
-            <el-input v-model="username" name="username" type="text" auto-complete="off" placeholder="账号" maxlength="20"
-              prefix-icon="iconfont icon-user" />
-          </el-form-item>
-          <el-form-item prop="password">
-            <el-input v-model="password" name="password" @type.native="submit" type="password" placeholder="密码" prefix-icon="iconfont icon-lock" maxlength="20"
-               />
-          </el-form-item>
-          <center><span ref="error" v-show="error" style="color: #FFFFFF;">登录失败，密码错误</span></center>
-          <el-form-item style="width:100%;">
-            <button type="submit" :loading="loading" @click="handleLogin" class="el-button login-btn" style="width:100%;">
-                <span v-if="!loading">登录</span>
-                <span v-else>登录中...</span>
-            </button>
-          </el-form-item>
-<!--          <el-form-item prop="remember-me">-->
-<!--                <el-checkbox v-model="checked" name="remember-me">记住我</el-checkbox>-->
-<!--            <label for="remember">-->
-<!--              <input id="remember" type="checkbox" name="remember-me" value="true" checked>-->
-<!--              记住我</label>-->
-<!--          </el-form-item>-->
-        </el-form>
-      </div>
+<div class="login" id="login-app">
+  <div class="login-box">
+    <img src="/backend/images/login/test2.png" alt="">
+    <div class="login-form">
+      <el-form ref="loginForm" :model="loginForm" :rules="loginRules" >
+        <div class="login-form-title">
+          <img src="/backend/images/login/logo.png" style="width:139px;height:42px;" alt="" />
+        </div>
+        <el-form-item prop="username">
+          <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号" maxlength="20"
+                    prefix-icon="iconfont icon-user" />
+        </el-form-item>
+        <el-form-item prop="password">
+          <el-input v-model="loginForm.password" type="password" placeholder="密码" prefix-icon="iconfont icon-lock" maxlength="20"
+                    @keyup.enter.native="handleLogin" />
+        </el-form-item>
+        <el-form-item style="width:100%;">
+          <el-button :loading="loading" class="login-btn" size="medium" type="primary" style="width:100%;"
+                     @click.native.prevent="handleLogin">
+            <span v-if="!loading">登录</span>
+            <span v-else>登录中...</span>
+          </el-button>
+        </el-form-item>
+      </el-form>
     </div>
   </div>
+</div>
 
-  <!-- 开发环境版本，包含了有帮助的命令行警告 -->
-  <script src="/backend/plugins/vue/vue.js"></script>
-  <!-- 引入组件库 -->
-  <script src="/backend/plugins/element-ui/index.js"></script>
-  <!-- 引入axios -->
-  <script src="/backend/plugins/axios/axios.min.js"></script>
-  <script src="/backend/js/request.js"></script>
-  <script src="/backend/js/validate.js"></script>
-  <script src="/backend/api/login.js"></script>
+<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<script src="/backend/plugins/vue/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="/backend/plugins/element-ui/index.js"></script>
+<!-- 引入axios -->
+<script src="/backend/plugins/axios/axios.min.js"></script>
+<script src="/backend/js/request.js"></script>
+<script src="/backend/js/validate.js"></script>
+<script src="/backend/api/login.js"></script>
 
-  <script>
-    new Vue({
-      el: '#login-app',
-      data() {
-        return {
+<script>
+  new Vue({
+    el: '#login-app',
+    data() {
+      return {
+        loginForm:{
           username: 'admin',
-          password: '123456',
-          loading: false,
-          checked: true,
-          error: false
-        }
-      },
-      computed: {
-      },
-      created() {
-      },
-      mounted(){
-        if (window.location.search == "?error"){
-          this.$refs.error.style="color:red"
-          this.error = true
-        }
-      },
-      methods: {
-        handleLogin() {
-          this.loading = true
+          password: '123456'
         },
+        loading: false
       }
-    })
-  </script>
+    },
+    computed: {
+      loginRules() {
+        const validateUsername = (rule, value, callback) => {
+          if (value.length < 1 ) {
+            callback(new Error('请输入用户名'))
+          } else {
+            callback()
+          }
+        }
+        const validatePassword = (rule, value, callback) => {
+          if (value.length < 6) {
+            callback(new Error('密码必须在6位以上'))
+          } else {
+            callback()
+          }
+        }
+        return {
+          'username': [{ 'validator': validateUsername, 'trigger': 'blur' }],
+          'password': [{ 'validator': validatePassword, 'trigger': 'blur' }]
+        }
+      }
+    },
+    created() {
+    },
+    methods: {
+      async handleLogin() {
+        this.$refs.loginForm.validate(async (valid) => {
+          if (valid) {
+            this.loading = true
+            let res = await loginApi(this.loginForm)
+            if (String(res.code) === '1') {
+              console.log(res.data)
+              localStorage.setItem('token',JSON.stringify(res.data))
+              window.location.href= '/backend/index.html'
+            } else {
+              this.$message.error(res.msg)
+              this.loading = false
+            }
+          }
+        })
+      }
+    }
+  })
+</script>
 </body>
-
-<style>
-    .el-button:focus, .el-button:hover {
-        background: #fdd24c;
-        border-color: #fdd24c;
-        color: #333333;
-    }
-    .login-btn {
-        border-radius: 17px;
-        padding: 11px 20px !important;
-        margin-top: 10px;
-        font-weight: 500;
-        font-size: 14px;
-        border: 0;
-        background-color: #ffc200;
-    }
-    .login-btn span {
-        color: black;
-    }
-</style>
 
 </html>
