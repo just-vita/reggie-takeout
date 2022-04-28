@@ -43,8 +43,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private DataSource datasource;
     @Autowired
     private PersistentTokenRepository tokenRepository;
-    @Autowired
-    private MyFailureHandler myFailureHandler;
 
     @Bean
     public PasswordEncoder pw(){
