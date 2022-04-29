@@ -24,7 +24,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Autowired
     private RedisUtil redisUtil;
     private final List<String> urlList = new ArrayList<>(Arrays.asList(
-            "html","css","js","png","woff","ico"
+            "html","css","js","png","woff","ico","map","woff2"
     ));
 
     @Override
@@ -34,6 +34,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         for (String url : urlList) {
             if (requestURI.endsWith(url)){
                 filterChain.doFilter(request,response);
+                return;
             }
         }
         if (request.getRequestURI().equals("/login")){
@@ -46,6 +47,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             String str = "{\"code\":0,\"msg\":\"NOTLOGIN\"}";
             byte[] b=str.getBytes();
             outputStream.write(b);
+            outputStream.close();
             return;
         }
 
@@ -53,7 +55,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         if (tokenMap == null){
             log.error("token非法");
             return;
-//            throw new RuntimeException("token非法");
         }
 
         String userId = (String) tokenMap.get("userId");
@@ -62,7 +63,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         if (Objects.isNull(loginUser)){
             log.error("用户未登录");
             return;
-//            throw new RuntimeException("用户未登录");
         }
         log.info("从redis中获取到了：" + loginUser.getUsername());
 

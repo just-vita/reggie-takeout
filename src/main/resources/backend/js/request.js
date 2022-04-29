@@ -55,8 +55,8 @@
       if (res.data.code === 0 && res.data.msg === 'NOTLOGIN') {// 返回登录页面
         console.log(res.data.msg)
         console.log('---/backend/page/login/login.html---')
-        localStorage.removeItem('userInfo')
-        window.top.location.href = '/backend/page/login/login.html'
+        localStorage.removeItem('token')
+        window.top.location.href = '/login.html'
       } else {
         return res.data
       }

@@ -104,7 +104,6 @@
               localStorage.setItem('token',JSON.stringify(res.data))
               window.location.href= '/backend/index.html'
             } else {
-              window.location.href= '/backend/index.html'
               this.$message.error(res.msg)
               this.loading = false
             }

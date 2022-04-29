@@ -128,6 +128,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 out.write(s);
                 out.flush();
                 out.close();
+//                response.sendRedirect("/backend/index.html");
             }
         });
         loginFilter.setAuthenticationFailureHandler(new AuthenticationFailureHandler() {
