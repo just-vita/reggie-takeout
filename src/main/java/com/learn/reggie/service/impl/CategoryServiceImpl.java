@@ -12,15 +12,18 @@ import com.learn.reggie.mapper.CategoryMapper;
 import com.learn.reggie.mapper.DishMapper;
 import com.learn.reggie.mapper.SetmealMapper;
 import com.learn.reggie.service.CategoryService;
+import com.learn.reggie.utils.RedisUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
-
+    @Autowired
+    private RedisUtil redisUtil;
     @Autowired
     private CategoryMapper categoryMapper;
     @Autowired
@@ -29,6 +32,7 @@ public class CategoryServiceImpl implements CategoryService {
     private SetmealMapper setmealMapper;
 
     @Override
+    @Cacheable(value = "category_page")
     public R<Page> getPage(PageParam pageParam) {
         Page<Category> page = new Page<>(pageParam.getPage(), pageParam.getPageSize());
         LambdaQueryWrapper<Category> lqw = new LambdaQueryWrapper<>();
@@ -45,6 +49,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public R<String> add(Category category) {
         categoryMapper.insert(category);
+        redisUtil.remove("category_page");
         return R.success("添加成功");
     }
 
@@ -65,6 +70,7 @@ public class CategoryServiceImpl implements CategoryService {
         }
 
         categoryMapper.deleteById(id);
+        redisUtil.remove("category_page");
 
         return R.success("删除成功");
     }
@@ -76,6 +82,7 @@ public class CategoryServiceImpl implements CategoryService {
         fromDb.setName(category.getName());
         fromDb.setSort(category.getSort());
         categoryMapper.updateById(fromDb);
+        redisUtil.remove("category_page");
         return R.success("编辑成功");
     }
 
@@ -86,6 +93,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Cacheable(value = "category_list")
     public R<List<Category>> list(Category category) {
         LambdaQueryWrapper<Category> lqw = new LambdaQueryWrapper<>();
         lqw.eq(

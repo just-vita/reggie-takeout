@@ -17,6 +17,7 @@ import com.learn.reggie.service.SetmealService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +36,7 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
     private CategoryMapper categoryMapper;
 
     @Override
+    @Cacheable(value = "setmeal_page")
     public R<Page> page(PageParam pageParam) {
         Page<SetmealDto> setmealDtoPage = new Page<>();
         Page<Setmeal> page = new Page<>(

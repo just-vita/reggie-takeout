@@ -3,9 +3,9 @@ server:
 spring:
   cache:
     type: redis
-    redis:
-      time-to-live: 60s
-      key-prefix: sms_
+#    redis:
+#      time-to-live: 60s
+#      key-prefix: sms_
   redis:
     host: localhost
     port: 6379

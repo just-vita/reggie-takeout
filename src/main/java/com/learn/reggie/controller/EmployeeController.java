@@ -9,8 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-
 @Slf4j
 @RestController
 @RequestMapping("employee")
@@ -21,27 +19,32 @@ public class EmployeeController {
 
     @PostMapping("logout")
     public R<String> logout(){
-        return employeeService.logout();
+        String info = employeeService.logout();
+        return R.success(info);
     }
 
     @PostMapping
     public R<String> add(@RequestBody Employee employee){
-        return employeeService.add(employee);
+        String info = employeeService.add(employee);
+        return R.success(info);
     }
 
     @GetMapping("page")
-    public R<Page> page(PageParam pageParam){
-        return employeeService.findAll(pageParam);
+    public R<Page<Employee>> page(PageParam pageParam){
+        Page<Employee> page = employeeService.findAll(pageParam);
+        return R.success(page);
     }
 
     @PutMapping
     public R<String> update(@RequestBody Employee employee){
-        return employeeService.changeStatus(employee);
+        String info = employeeService.changeStatus(employee);
+        return R.success(info);
     }
 
     @GetMapping("{id}")
     public R<Employee> getById(@PathVariable("id") Long id){
-        return employeeService.getEmployeeById(id);
+        Employee employeeById = employeeService.getEmployeeById(id);
+        return R.success(employeeById);
     }
 
 }
