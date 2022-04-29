@@ -39,6 +39,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private MyAccessDeniedHandler myAccessDeniedHandler;
     @Autowired
+    private MyLogoutSuccessHandler myLogoutSuccessHandler;
+    @Autowired
     private MyUserService userService;
     @Autowired
     private DataSource datasource;
@@ -62,8 +64,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // 相关属性在loginFilter设置了
         http.formLogin()
                 .loginPage("/login.html");
-//                .successHandler(new MyAuthenticationSuccessHandler("/backend/index.html"))
-//                .failureHandler(myFailureHandler);
 
         http.addFilterAt(loginFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
@@ -85,23 +85,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.exceptionHandling()
                 .accessDeniedHandler(myAccessDeniedHandler);
 
-//        http.rememberMe()
-//                .userDetailsService(userService)
-//                .tokenRepository(tokenRepository);
-//                .rememberMeServices();
-        
         http.logout()
-                .logoutSuccessUrl("/login.html")
-                .logoutUrl("/logout");
+                .logoutUrl("/logout")
+                .logoutSuccessHandler(myLogoutSuccessHandler);
     }
-
-//    @Bean
-//    public PersistentTokenRepository tokenRepository(){
-//        JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
-//        jdbcTokenRepository.setDataSource(datasource);
-////        jdbcTokenRepository.setCreateTableOnStartup(true);
-//        return jdbcTokenRepository;
-//    }
 
     @Override
     @Bean
@@ -157,4 +144,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         loginFilter.setFilterProcessesUrl("/login");
         return loginFilter;
     }
+
 }

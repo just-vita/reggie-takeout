@@ -28,7 +28,8 @@ public class JwtUtil {
 
     public static Map<String,Object> checkToken(String token){
         // 去除token中的双引号，偷懒
-        token = token.substring(1, token.length() - 1);
+        // token = token.substring(1, token.length() - 1);
+
         Jwt parse = null;
         try {
             parse = Jwts.parser().setSigningKey(jwtToken).parse(token);

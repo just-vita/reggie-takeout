@@ -71,7 +71,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             outputStream.close();
             return;
         }
-        log.info("从redis中获取到了：" + loginUser.getUsername());
+//        log.info("从redis中获取到了：" + loginUser.getUsername());
 
         CommonThreadLocal.setEmployeeLocal(loginUser.getEmployee().getId());
 
