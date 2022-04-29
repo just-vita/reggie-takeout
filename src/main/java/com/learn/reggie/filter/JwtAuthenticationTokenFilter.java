@@ -1,5 +1,6 @@
 package com.learn.reggie.filter;
 
+import com.learn.reggie.common.CommonThreadLocal;
 import com.learn.reggie.entity.LoginUser;
 import com.learn.reggie.utils.JwtUtil;
 import com.learn.reggie.utils.RedisUtil;
@@ -37,15 +38,18 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                 return;
             }
         }
-        if (request.getRequestURI().equals("/login")){
+        if (requestURI.equals("/login") || requestURI.equals("/common/download")){
             filterChain.doFilter(request,response);
             return;
         }
+
+        response.setContentType("application/json;charset=utf-8");
+        ServletOutputStream outputStream = response.getOutputStream();
+        String str = "{\"code\":0,\"msg\":\"NOTLOGIN\"}";
+        byte[] b=str.getBytes();
+
         if (Objects.isNull(token) || "null".equals(token)){
-            response.setContentType("application/json;charset=utf-8");
-            ServletOutputStream outputStream = response.getOutputStream();
-            String str = "{\"code\":0,\"msg\":\"NOTLOGIN\"}";
-            byte[] b=str.getBytes();
+            log.error("用户未登录");
             outputStream.write(b);
             outputStream.close();
             return;
@@ -53,7 +57,8 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
         Map<String, Object> tokenMap = JwtUtil.checkToken(token);
         if (tokenMap == null){
-            log.error("token非法");
+            outputStream.write(b);
+            outputStream.close();
             return;
         }
 
@@ -62,9 +67,13 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         LoginUser loginUser = (LoginUser) redisUtil.get(redisKey);
         if (Objects.isNull(loginUser)){
             log.error("用户未登录");
+            outputStream.write(b);
+            outputStream.close();
             return;
         }
         log.info("从redis中获取到了：" + loginUser.getUsername());
+
+        CommonThreadLocal.setEmployeeLocal(loginUser.getEmployee().getId());
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(

@@ -2,6 +2,7 @@ package com.learn.reggie.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.learn.reggie.common.CommonThreadLocal;
 import com.learn.reggie.common.R;
 import com.learn.reggie.entity.LoginUser;
 import com.learn.reggie.filter.JwtAuthenticationTokenFilter;
@@ -24,8 +25,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
-import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -43,8 +42,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private MyUserService userService;
     @Autowired
     private DataSource datasource;
-    @Autowired
-    private PersistentTokenRepository tokenRepository;
+//    @Autowired
+//    private PersistentTokenRepository tokenRepository;
     @Autowired
     private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
     @Autowired
@@ -76,6 +75,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/backend/styles/**").permitAll()
                 .antMatchers("/backend/images/**").permitAll()
                 .antMatchers("/backend/js/**").permitAll()
+                .antMatchers("/common/**").permitAll()
                 .antMatchers("/login").permitAll()
 //                .antMatchers("/backend/page/**").authenticated()
 //                .antMatchers("/backend/api/**").authenticated()
@@ -85,9 +85,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.exceptionHandling()
                 .accessDeniedHandler(myAccessDeniedHandler);
 
-        http.rememberMe()
-                .userDetailsService(userService)
-                .tokenRepository(tokenRepository);
+//        http.rememberMe()
+//                .userDetailsService(userService)
+//                .tokenRepository(tokenRepository);
 //                .rememberMeServices();
         
         http.logout()
@@ -95,13 +95,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutUrl("/logout");
     }
 
-    @Bean
-    public PersistentTokenRepository tokenRepository(){
-        JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
-        jdbcTokenRepository.setDataSource(datasource);
-//        jdbcTokenRepository.setCreateTableOnStartup(true);
-        return jdbcTokenRepository;
-    }
+//    @Bean
+//    public PersistentTokenRepository tokenRepository(){
+//        JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
+//        jdbcTokenRepository.setDataSource(datasource);
+////        jdbcTokenRepository.setCreateTableOnStartup(true);
+//        return jdbcTokenRepository;
+//    }
 
     @Override
     @Bean
@@ -120,6 +120,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 LoginUser loginUser = (LoginUser) authentication.getPrincipal();
 
                 redisUtil.set("login:"+loginUser.getEmployee().getId(),loginUser);
+                CommonThreadLocal.setEmployeeLocal(loginUser.getEmployee().getId());
 
                 Long id = loginUser.getEmployee().getId();
                 String token = JwtUtil.createToken(id.toString());
@@ -128,7 +129,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 out.write(s);
                 out.flush();
                 out.close();
-//                response.sendRedirect("/backend/index.html");
             }
         });
         loginFilter.setAuthenticationFailureHandler(new AuthenticationFailureHandler() {

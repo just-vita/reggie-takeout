@@ -37,6 +37,7 @@ public class CategoryServiceImpl implements CategoryService {
                 Category::getName,
                 pageParam.getName());
         lqw.orderByDesc(Category::getUpdateTime);
+        lqw.orderByAsc(Category::getSort);
         categoryMapper.selectPage(page, lqw);
         return R.success(page);
     }

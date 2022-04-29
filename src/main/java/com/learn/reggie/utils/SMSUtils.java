@@ -8,7 +8,7 @@ import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.profile.DefaultProfile;
 
 /**
- * 短信发送工具类
+ * 短信发送工具类   *** 暂未使用 ***
  */
 public class SMSUtils {
 
