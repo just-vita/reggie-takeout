@@ -3,7 +3,6 @@ package com.learn.reggie.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.learn.reggie.common.CustomException;
-import com.learn.reggie.common.R;
 import com.learn.reggie.entity.Category;
 import com.learn.reggie.entity.Dish;
 import com.learn.reggie.entity.PageParam;
@@ -15,12 +14,15 @@ import com.learn.reggie.service.CategoryService;
 import com.learn.reggie.utils.RedisUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@CacheConfig(cacheNames = {"category_page"})
 public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private RedisUtil redisUtil;
@@ -32,8 +34,8 @@ public class CategoryServiceImpl implements CategoryService {
     private SetmealMapper setmealMapper;
 
     @Override
-    @Cacheable(value = "category_page")
-    public R<Page> getPage(PageParam pageParam) {
+    @Cacheable(key = "'page'")
+    public Page<Category> getPage(PageParam pageParam) {
         Page<Category> page = new Page<>(pageParam.getPage(), pageParam.getPageSize());
         LambdaQueryWrapper<Category> lqw = new LambdaQueryWrapper<>();
         lqw.like(
@@ -41,20 +43,21 @@ public class CategoryServiceImpl implements CategoryService {
                 Category::getName,
                 pageParam.getName());
         lqw.orderByDesc(Category::getUpdateTime);
-        lqw.orderByAsc(Category::getSort);
         categoryMapper.selectPage(page, lqw);
-        return R.success(page);
+        return page;
     }
 
     @Override
-    public R<String> add(Category category) {
+    @CacheEvict(key = "'page'")
+    public String add(Category category) {
         categoryMapper.insert(category);
         redisUtil.remove("category_page");
-        return R.success("添加成功");
+        return "添加成功";
     }
 
     @Override
-    public R<String> delete(Long id) {
+    @CacheEvict(key = "'page'")
+    public String delete(Long id) {
         LambdaQueryWrapper<Dish> dishlqw = new LambdaQueryWrapper<Dish>();
         dishlqw.eq(Dish::getCategoryId, id);
         Integer count1 = dishMapper.selectCount(dishlqw);
@@ -72,36 +75,39 @@ public class CategoryServiceImpl implements CategoryService {
         categoryMapper.deleteById(id);
         redisUtil.remove("category_page");
 
-        return R.success("删除成功");
+        return "删除成功";
     }
 
     @Override
-    public R<String> update(Category category) {
+    @CacheEvict(key = "'page'")
+    public String update(Category category) {
         Long id = category.getId();
         Category fromDb = categoryMapper.selectById(id);
         fromDb.setName(category.getName());
         fromDb.setSort(category.getSort());
         categoryMapper.updateById(fromDb);
         redisUtil.remove("category_page");
-        return R.success("编辑成功");
+        return "编辑成功";
     }
 
     @Override
-    public R<Category> getById(Long id) {
-        Category category = categoryMapper.selectById(id);
-        return R.success(category);
+    @Cacheable(value = "category_getById",key = "#id")
+    public Category getById(Long id) {
+        if (id == null){
+            return null;
+        }
+        return categoryMapper.selectById(id);
     }
 
     @Override
-    @Cacheable(value = "category_list")
-    public R<List<Category>> list(Category category) {
+    @Cacheable(value = "category_list", key = "'list'")
+    public List<Category> list(Category category) {
         LambdaQueryWrapper<Category> lqw = new LambdaQueryWrapper<>();
         lqw.eq(
                 category.getType() != null,
                 Category::getType,
                 category.getType());
         lqw.orderByAsc(Category::getUpdateTime);
-        List<Category> categories = categoryMapper.selectList(lqw);
-        return R.success(categories);
+        return categoryMapper.selectList(lqw);
     }
 }

@@ -78,7 +78,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     }
 
     @Override
-    @Cacheable(value = "employeeById",key = "#id")
+    @Cacheable(value = "employee_getById",key = "#id")
     public Employee getEmployeeById(Long id) {
         if (id == null){
             return null;

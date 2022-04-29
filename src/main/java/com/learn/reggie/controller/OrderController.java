@@ -17,21 +17,25 @@ public class OrderController {
 
     @PostMapping("submit")
     public R<String> submit(@RequestBody Orders orders){
-        return orderService.submit(orders);
+        String info = orderService.submit(orders);
+        return R.success(info);
     }
 
     @GetMapping("userPage")
     public R<Page<OrderDto>> userPage(PageParam pageParam){
-        return orderService.userPage(pageParam);
+        Page<OrderDto> page = orderService.userPage(pageParam);
+        return R.success(page);
     }
 
     @GetMapping("page")
     public R<Page<Orders>> page(PageParam pageParam){
-        return orderService.page(pageParam);
+        Page<Orders> page = orderService.page(pageParam);
+        return R.success(page);
     }
 
     @PutMapping
     public R<String> changeStatus(Orders orders){
-        return orderService.changeStatus(orders);
+        String info = orderService.changeStatus(orders);
+        return R.success(info);
     }
 }

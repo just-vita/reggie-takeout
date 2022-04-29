@@ -2,7 +2,6 @@ package com.learn.reggie.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.learn.reggie.common.R;
 import com.learn.reggie.dto.DishDto;
 import com.learn.reggie.entity.Category;
 import com.learn.reggie.entity.Dish;
@@ -16,6 +15,8 @@ import com.learn.reggie.service.DishService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@CacheConfig(cacheNames = {"dish_page"})
 public class DishServiceImpl implements DishService {
 
     @Autowired
@@ -37,8 +39,8 @@ public class DishServiceImpl implements DishService {
     private CategoryMapper categoryMapper;
 
     @Override
-    @Cacheable(value = "dish_page")
-    public R<Page> page(PageParam pageParam) {
+    @Cacheable(key = "'page'")
+    public Page<DishDto> page(PageParam pageParam) {
         Page<DishDto> dishDtoPage = new Page<>();
         Page<Dish> page = new Page<>(
                 pageParam.getPage(),
@@ -69,21 +71,23 @@ public class DishServiceImpl implements DishService {
         BeanUtils.copyProperties(page,dishDtoPage,"records");
         dishDtoPage.setRecords(dishDtoList);
 
-        return R.success(dishDtoPage);
+        return dishDtoPage;
     }
 
     @Override
-    public R<String> add(DishDto dishDto) {
+    @CacheEvict(key = "'page'")
+    public String add(DishDto dishDto) {
         dishMapper.insert(dishDto);
         Long dishId = dishDto.getId();
         List<DishFlavor> flavorList = dishDto.getFlavors();
         flavorList.forEach(dishFlavor -> dishFlavor.setDishId(dishId));
         dishFlavorService.saveBatch(flavorList);
-        return R.success("添加成功");
+        return "添加成功";
     }
 
     @Override
-    public R<DishDto> getById(Long id) {
+    @Cacheable(value = "dish_getById",key = "#id")
+    public DishDto getById(Long id) {
         DishDto dishDto = new DishDto();
         Dish dish = dishMapper.selectById(id);
 
@@ -101,11 +105,12 @@ public class DishServiceImpl implements DishService {
 
         dishDto.setFlavors(dishFlavorList);
 
-        return R.success(dishDto);
+        return dishDto;
     }
 
     @Override
-    public R<String> update(DishDto dishDto) {
+    @CacheEvict(key = "'page'")
+    public String update(DishDto dishDto) {
         dishMapper.updateById(dishDto);
 
         LambdaQueryWrapper<DishFlavor> lqw = new LambdaQueryWrapper<>();
@@ -121,11 +126,12 @@ public class DishServiceImpl implements DishService {
 
         dishFlavorService.saveBatch(flavorList);
 
-        return R.success("修改成功");
+        return "修改成功";
     }
 
     @Override
-    public R<String> delete(String ids) {
+    @CacheEvict(key = "'page'")
+    public String delete(String ids) {
         String[] idList = ids.split(",");
         for (String id : idList) {
             LambdaQueryWrapper<DishFlavor> lqw = new LambdaQueryWrapper<>();
@@ -135,22 +141,24 @@ public class DishServiceImpl implements DishService {
             dishMapper.deleteById(id);
         }
 
-        return R.success("删除成功");
+        return "删除成功";
     }
 
     @Override
-    public R<String> changeStatus(Integer status, String ids) {
+    @CacheEvict(key = "'page'")
+    public String changeStatus(Integer status, String ids) {
         String[] idList = ids.split(",");
         for (String id : idList) {
             Dish dish = dishMapper.selectById(id);
             dish.setStatus(status);
             dishMapper.updateById(dish);
         }
-        return R.success("修改成功");
+        return "修改成功";
     }
 
     @Override
-    public R<List<DishDto>> list(Long categoryId) {
+    @Cacheable(value = "dish_list",key = "#categoryId")
+    public List<DishDto> list(Long categoryId) {
         LambdaQueryWrapper<Dish> lqw = new LambdaQueryWrapper<>();
         lqw.eq(Dish::getCategoryId, categoryId);
         lqw.orderByDesc(Dish::getUpdateTime);
@@ -176,7 +184,7 @@ public class DishServiceImpl implements DishService {
         }).collect(Collectors.toList());
 
 
-        return R.success(dishDtoList);
+        return dishDtoList;
     }
 
 

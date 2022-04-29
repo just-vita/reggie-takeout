@@ -27,6 +27,21 @@ public class RedisConfig {
 
 		Set cacheNames = new HashSet<>();
 		cacheNames.add("employee_page");
+		cacheNames.add("employee_getById");
+		cacheNames.add("category_page");
+		cacheNames.add("category_getById");
+		cacheNames.add("category_list");
+		cacheNames.add("dish_page");
+		cacheNames.add("dish_getById");
+		cacheNames.add("dish_list");
+		cacheNames.add("order_page");
+		cacheNames.add("order_userPage");
+		cacheNames.add("setmeal_page");
+		cacheNames.add("setmeal_getById");
+		cacheNames.add("setmeal_list");
+		cacheNames.add("address_page");
+		cacheNames.add("address_default");
+		cacheNames.add("address_getById");
 		cacheNames.add("smsCode");
 
 		ConcurrentHashMap configMap = new ConcurrentHashMap<>();

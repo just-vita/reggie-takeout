@@ -77,7 +77,7 @@ public class AddressBookServiceImpl extends ServiceImpl<AddressBookMapper,Addres
     }
 
     @Override
-    @Cacheable(value = "addressById",key = "#id")
+    @Cacheable(value = "address_getById",key = "#id")
     public AddressBook getById(Long id) {
         LambdaQueryWrapper<AddressBook> lqw = new LambdaQueryWrapper<>();
         lqw.eq(AddressBook::getId, id);

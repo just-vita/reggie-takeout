@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.learn.reggie.common.CommonThreadLocal;
 import com.learn.reggie.common.CustomException;
-import com.learn.reggie.common.R;
 import com.learn.reggie.dto.OrderDto;
 import com.learn.reggie.entity.*;
 import com.learn.reggie.mapper.*;
@@ -14,6 +13,9 @@ import com.learn.reggie.service.OrderDetailService;
 import com.learn.reggie.service.OrderService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
+@CacheConfig(cacheNames = {"order_page"})
 public class OrderServiceImpl implements OrderService {
     @Autowired
     private ShoppingCartMapper shoppingCartMapper;
@@ -40,7 +43,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public R<String> submit(Orders orders) {
+    public String submit(Orders orders) {
         Long userId = CommonThreadLocal.getUser();
 
         //查询当前用户的购物车数据
@@ -104,11 +107,12 @@ public class OrderServiceImpl implements OrderService {
         //清空购物车数据
         shoppingCartMapper.delete(wrapper);
 
-        return R.success("下单成功");
+        return "下单成功";
     }
 
     @Override
-    public R<Page<OrderDto>> userPage(PageParam pageParam) {
+    @Cacheable(value = "order_userPage", key = "'userpage'")
+    public Page<OrderDto> userPage(PageParam pageParam) {
         Page<Orders> ordersPage = new Page<Orders>(pageParam.getPage(), pageParam.getPageSize());
         LambdaQueryWrapper<Orders> lqw = new LambdaQueryWrapper<>();
         lqw.eq(Orders::getUserId, CommonThreadLocal.getUser());
@@ -138,11 +142,12 @@ public class OrderServiceImpl implements OrderService {
 
         orderDtoPage.setRecords(orderDtoLIst);
 
-        return R.success(orderDtoPage);
+        return orderDtoPage;
     }
 
     @Override
-    public R<Page<Orders>> page(PageParam pageParam) {
+    @Cacheable(key = "'page'")
+    public Page<Orders> page(PageParam pageParam) {
         Page<Orders> ordersPage = new Page<Orders>(pageParam.getPage(), pageParam.getPageSize());
         LambdaQueryWrapper<Orders> lqw = new LambdaQueryWrapper<>();
         lqw.orderByDesc(Orders::getOrderTime);
@@ -153,17 +158,18 @@ public class OrderServiceImpl implements OrderService {
             return item;
         }).collect(Collectors.toList());
         ordersPage.setRecords(ordersList);
-        return R.success(ordersPage);
+        return ordersPage;
     }
 
     @Override
-    public R<String> changeStatus(Orders orders) {
+    @CacheEvict(value = "order_userPage", key = "'userpage'")
+    public String changeStatus(Orders orders) {
         Long id = orders.getId();
         Integer status = orders.getStatus();
         LambdaUpdateWrapper<Orders> luw = new LambdaUpdateWrapper<>();
         luw.eq(Orders::getId, id);
         luw.set(Orders::getStatus, status);
         orderMapper.update(orders, luw);
-        return R.success("修改成功");
+        return "修改成功";
     }
 }

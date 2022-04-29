@@ -19,32 +19,38 @@ public class CategoryController {
 
     @GetMapping("page")
     public R<Page> getPage(PageParam pageParam){
-        return categoryService.getPage(pageParam);
+        Page<Category> page = categoryService.getPage(pageParam);
+        return R.success(page);
     }
 
     @PostMapping
     public R<String> add(@RequestBody Category category){
-        return categoryService.add(category);
+        String info = categoryService.add(category);
+        return R.success(info);
     }
 
     @DeleteMapping
     public R<String> delete(Long ids){
-        return categoryService.delete(ids);
+        String info = categoryService.delete(ids);
+        return R.success(info);
     }
 
     @PutMapping
     public R<String> update(@RequestBody Category category){
-        return categoryService.update(category);
+        String info = categoryService.update(category);
+        return R.success(info);
     }
 
     @GetMapping("{id}")
     public R<Category> getById(@PathVariable("id") Long id){
-        return categoryService.getById(id);
+        Category category = categoryService.getById(id);
+        return R.success(category);
     }
 
     @GetMapping("list")
     public R<List<Category>> list(Category category){
-        return categoryService.list(category);
+        List<Category> categoryList = categoryService.list(category);
+        return R.success(categoryList);
     }
 
 }

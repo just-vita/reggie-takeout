@@ -19,36 +19,43 @@ public class SetmealController {
 
     @GetMapping("page")
     public R<Page> page(PageParam pageParam) {
-        return setmealService.page(pageParam);
+        Page<SetmealDto> page = setmealService.page(pageParam);
+        return R.success(page);
     }
 
     @PostMapping
     public R<String> add(@RequestBody SetmealDto setmealDto) {
-        return setmealService.add(setmealDto);
+        String info = setmealService.add(setmealDto);
+        return R.success(info);
     }
 
     @DeleteMapping
     public R<String> delete(String ids) {
-        return setmealService.delete(ids);
+        String info = setmealService.delete(ids);
+        return R.success(info);
     }
 
     @PutMapping
     public R<String> update(@RequestBody SetmealDto setmealDto) {
-        return setmealService.update(setmealDto);
+        String info = setmealService.update(setmealDto);
+        return R.success(info);
     }
 
     @GetMapping("{id}")
     public R<SetmealDto> getById(@PathVariable("id") Long id) {
-        return setmealService.getById(id);
+        SetmealDto setmealDto = setmealService.getById(id);
+        return R.success(setmealDto);
     }
 
     @PostMapping("status/{status}")
     public R<String> changeStatus(@PathVariable Integer status, String ids) {
-        return setmealService.changeStatus(ids, status);
+        String info = setmealService.changeStatus(ids, status);
+        return R.success(info);
     }
 
     @GetMapping("list")
     public R<List<Setmeal>> list(Setmeal setmeal){
-        return setmealService.list(setmeal);
+        List<Setmeal> list = setmealService.list(setmeal);
+        return R.success(list);
     }
 }
