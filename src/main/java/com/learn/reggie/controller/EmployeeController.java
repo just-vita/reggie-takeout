@@ -27,14 +27,14 @@ public class EmployeeController {
     }
 
     @PostMapping
-    @PreAuthorize("principal.username.equals('admin')")
+    @PreAuthorize("hasAuthority('admin')")
     public R<String> add(@RequestBody Employee employee){
         String info = employeeService.add(employee);
         return R.success(info);
     }
 
     @GetMapping("page")
-    @PreAuthorize("principal.username.equals('admin')")
+    @PreAuthorize("hasAuthority('admin')")
     public R<Page<Employee>> page(QueryPageParam queryPageParam){
         if (queryPageParam.getName() == null){
             PageParam pageParam = new PageParam();

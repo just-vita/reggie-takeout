@@ -25,7 +25,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Autowired
     private RedisUtil redisUtil;
     private final List<String> urlList = new ArrayList<>(Arrays.asList(
-            "html","css","js","png","woff","ico","map","woff2"
+            "html","css","js","png","woff","ico","map","woff2","ttf","otf"
     ));
 
     @Override
@@ -39,7 +39,11 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             }
         }
         if (requestURI.equals("/login") ||
-                requestURI.equals("/common/download") || requestURI.equals("/common/upload")){
+                requestURI.equals("/common/download") ||
+                requestURI.equals("/common/upload") ||
+                requestURI.equals("/user/login") ||
+                requestURI.equals("/user/sendMsg")
+        ){
             filterChain.doFilter(request,response);
             return;
         }
@@ -49,6 +53,12 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         ServletOutputStream outputStream = response.getOutputStream();
         String str = "{\"code\":0,\"msg\":\"NOTLOGIN\"}";
         byte[] b=str.getBytes();
+
+        Object user = request.getSession().getAttribute("user");
+        if (user != null) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         if (Objects.isNull(token) || "null".equals(token)){
             log.error("用户未登录");
@@ -80,7 +90,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(
-                        loginUser, null, null);
+                        loginUser, null, loginUser.getAuthorities());
         SecurityContextHolder.getContext().
                 setAuthentication(authenticationToken);
         filterChain.doFilter(request,response);
