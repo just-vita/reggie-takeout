@@ -3,7 +3,9 @@ package com.learn.reggie.filter;
 import com.alibaba.fastjson.JSON;
 import com.learn.reggie.common.CommonThreadLocal;
 import com.learn.reggie.common.R;
+import com.learn.reggie.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.AntPathMatcher;
 
 import javax.servlet.*;
@@ -19,6 +21,10 @@ import java.io.PrintWriter;
 @WebFilter(filterName = "loginCheckFilter", urlPatterns = "/*")
 @Slf4j
 public class LoginCheckFilter implements Filter {
+
+    @Autowired
+    private RedisUtil redisUtil;
+
     //路径匹配器，支持通配符
     public static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
 
@@ -74,7 +80,7 @@ public class LoginCheckFilter implements Filter {
 //        }
 
         //4.2、判断登录状态，如果已登录，则直接放行
-        Object userId = request.getSession().getAttribute("user");
+        Object userId = redisUtil.get("loginUser");
         if (userId != null) {
             log.info("用户已登录前台，用户id为：{}", userId);
 

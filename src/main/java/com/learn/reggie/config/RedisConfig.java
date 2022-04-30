@@ -42,6 +42,7 @@ public class RedisConfig {
 		cacheNames.add("address_page");
 		cacheNames.add("address_default");
 		cacheNames.add("address_getById");
+		cacheNames.add("loginUser");
 		cacheNames.add("smsCode");
 
 		ConcurrentHashMap configMap = new ConcurrentHashMap<>();
@@ -62,6 +63,7 @@ public class RedisConfig {
 		configMap.put("address_page", expiration);
 		configMap.put("address_default", expiration);
 		configMap.put("address_getById", expiration);
+		configMap.put("loginUser", config.entryTtl(Duration.ofDays(1L)));
 		configMap.put("smsCode", config.entryTtl(Duration.ofMinutes(10L)));
 
         //永久

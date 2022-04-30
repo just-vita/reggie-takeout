@@ -111,7 +111,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Cacheable(value = "order_userPage", key = "'userpage'")
     public Page<OrderDto> userPage(PageParam pageParam) {
         Page<Orders> ordersPage = new Page<Orders>(pageParam.getPage(), pageParam.getPageSize());
         LambdaQueryWrapper<Orders> lqw = new LambdaQueryWrapper<>();
