@@ -34,6 +34,9 @@ public class JwtUtil {
         try {
             parse = Jwts.parser().setSigningKey(jwtToken).parse(token);
             return (Map<String, Object>) parse.getBody();
+        } catch (ExpiredJwtException e){
+            log.error("token已过期");
+            return null;
         } catch (Exception e) {
             log.error("Jwt验证失败");
             e.printStackTrace();

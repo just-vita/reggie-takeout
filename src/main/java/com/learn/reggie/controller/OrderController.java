@@ -34,7 +34,7 @@ public class OrderController {
     }
 
     @PutMapping
-    public R<String> changeStatus(Orders orders){
+    public R<String> changeStatus(@RequestBody Orders orders){
         String info = orderService.changeStatus(orders);
         return R.success(info);
     }

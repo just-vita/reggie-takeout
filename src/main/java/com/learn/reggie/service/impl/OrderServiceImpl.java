@@ -162,7 +162,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @CacheEvict(value = "order_userPage", key = "'userpage'")
+    @CacheEvict(key = "'page'")
     public String changeStatus(Orders orders) {
         Long id = orders.getId();
         Integer status = orders.getStatus();
