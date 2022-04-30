@@ -9,6 +9,7 @@ import com.learn.reggie.service.EmployeeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -26,13 +27,14 @@ public class EmployeeController {
     }
 
     @PostMapping
+    @PreAuthorize("principal.username.equals('admin')")
     public R<String> add(@RequestBody Employee employee){
         String info = employeeService.add(employee);
         return R.success(info);
     }
 
-
     @GetMapping("page")
+    @PreAuthorize("principal.username.equals('admin')")
     public R<Page<Employee>> page(QueryPageParam queryPageParam){
         if (queryPageParam.getName() == null){
             PageParam pageParam = new PageParam();

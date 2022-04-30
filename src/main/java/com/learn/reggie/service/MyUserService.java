@@ -11,6 +11,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class MyUserService implements UserDetailsService {
     @Autowired
@@ -31,6 +34,12 @@ public class MyUserService implements UserDetailsService {
         String password = passwordEncoder.encode(employee.getPassword());
         employee.setPassword(password);
 
-        return new LoginUser(employee);
+        List<String> permission = new ArrayList<>();
+        if (employee.getId() == 1){
+            permission.add("admin");
+            return new LoginUser(employee, permission);
+        }
+
+        return new LoginUser(employee,permission);
     }
 }
