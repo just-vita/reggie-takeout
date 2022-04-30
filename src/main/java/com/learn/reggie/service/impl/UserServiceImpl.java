@@ -46,6 +46,7 @@ public class UserServiceImpl implements UserService {
                 user.setStatus(1);
                 userMapper.insert(user);
             }
+            CommonThreadLocal.removeEmployee();
             CommonThreadLocal.setUserLocal(user.getId());
             redisUtil.set("loginUser", user.getId());
             return R.success(user);

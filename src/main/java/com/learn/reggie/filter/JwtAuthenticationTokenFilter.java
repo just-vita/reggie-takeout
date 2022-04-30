@@ -62,7 +62,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         }
 
         if (Objects.isNull(token) || "null".equals(token)){
-            log.error("用户未登录 token不存在");
+//            log.error("用户未登录 token不存在");
             outputStream.write(b);
             outputStream.close();
             return;
@@ -87,6 +87,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
 //        log.info("从redis中获取到了：" + loginUser.getUsername());
 
+        CommonThreadLocal.removeUser();
         CommonThreadLocal.setEmployeeLocal(loginUser.getEmployee().getId());
 
         UsernamePasswordAuthenticationToken authenticationToken =

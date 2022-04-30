@@ -38,6 +38,7 @@
                     <img src="./../images/edit.png" @click.stop.prevent="toAddressEditPage(item)"/>
                     <div class="divSplit"></div>
                     <div class="divDefault" >
+<!--                        <img src="./../images/checked_true.png" v-if="item.isDefault === 1">-->
                         <img src="./../images/checked_true.png" v-if="item.isDefault === 1">
                         <img src="./../images/checked_false.png" @click.stop.prevent="setDefaultAddress(item)" v-else>设为默认地址
                     </div>
@@ -129,6 +130,7 @@
                         const res = await addressListApi()
                         if(res.code === 1){
                             this.addressList = res.data
+                            console.log(this.addressList)
                         }else{
                             this.$message.error(res.msg)
                         }
@@ -137,7 +139,15 @@
                         if(item.id){
                             const res = await setDefaultAddressApi({id:item.id})
                             if(res.code === 1){
-                                this.initData()
+                                // this.initData()
+                                for (let i = 0; i < this.addressList.length; i++){
+                                    if (this.addressList[i].isDefault === 1){
+                                        this.addressList[i].isDefault = 0
+                                    }
+                                    if (this.addressList[i].id == item.id){
+                                        this.addressList[i].isDefault = 1
+                                    }
+                                }
                             }else{
                                 this.$message.error(res.msg)
                             }

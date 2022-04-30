@@ -54,7 +54,6 @@ public class AddressBookServiceImpl extends ServiceImpl<AddressBookMapper,Addres
     }
 
     @Override
-    @Cacheable(value = "address_default", key = "'default'")
     public AddressBook getDefault() {
         LambdaQueryWrapper<AddressBook> lqw = new LambdaQueryWrapper<>();
         lqw.eq(AddressBook::getUserId, CommonThreadLocal.getUser());
