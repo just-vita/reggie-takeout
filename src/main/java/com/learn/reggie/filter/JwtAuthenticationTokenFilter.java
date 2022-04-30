@@ -38,12 +38,14 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                 return;
             }
         }
-        if (requestURI.equals("/login") || requestURI.equals("/common/download")){
+        if (requestURI.equals("/login") ||
+                requestURI.equals("/common/download") || requestURI.equals("/common/upload")){
             filterChain.doFilter(request,response);
             return;
         }
 
         response.setContentType("application/json;charset=utf-8");
+        // 使用getWriter()会报错，所以使用getOutputStream()
         ServletOutputStream outputStream = response.getOutputStream();
         String str = "{\"code\":0,\"msg\":\"NOTLOGIN\"}";
         byte[] b=str.getBytes();
@@ -71,6 +73,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             outputStream.close();
             return;
         }
+
 //        log.info("从redis中获取到了：" + loginUser.getUsername());
 
         CommonThreadLocal.setEmployeeLocal(loginUser.getEmployee().getId());

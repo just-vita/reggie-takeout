@@ -7,7 +7,6 @@ import com.learn.reggie.common.R;
 import com.learn.reggie.entity.LoginUser;
 import com.learn.reggie.filter.JwtAuthenticationTokenFilter;
 import com.learn.reggie.filter.LoginFilter;
-import com.learn.reggie.service.MyUserService;
 import com.learn.reggie.utils.JwtUtil;
 import com.learn.reggie.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -40,12 +38,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private MyAccessDeniedHandler myAccessDeniedHandler;
     @Autowired
     private MyLogoutSuccessHandler myLogoutSuccessHandler;
-    @Autowired
-    private MyUserService userService;
-    @Autowired
-    private DataSource datasource;
-//    @Autowired
-//    private PersistentTokenRepository tokenRepository;
     @Autowired
     private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
     @Autowired

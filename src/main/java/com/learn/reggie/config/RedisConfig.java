@@ -48,8 +48,21 @@ public class RedisConfig {
         //自定义缓存时间
 		RedisCacheConfiguration expiration = config.entryTtl(Duration.ofMinutes(30L));
 		configMap.put("employee_page", expiration);
-		configMap.put("employeeById", expiration);
-		configMap.put("smsCode", config.entryTtl(Duration.ofMinutes(5L)));
+		configMap.put("employee_getById", expiration);
+		configMap.put("category_page", expiration);
+		configMap.put("category_getById", expiration);
+		configMap.put("category_list", expiration);
+		configMap.put("dish_page", expiration);
+		configMap.put("dish_list", expiration);
+		configMap.put("order_page", expiration);
+		configMap.put("order_userPage", expiration);
+		configMap.put("setmeal_page", expiration);
+		configMap.put("setmeal_getById", expiration);
+		configMap.put("setmeal_list", expiration);
+		configMap.put("address_page", expiration);
+		configMap.put("address_default", expiration);
+		configMap.put("address_getById", expiration);
+		configMap.put("smsCode", config.entryTtl(Duration.ofMinutes(10L)));
 
         //永久
 //		configMap.put("", config);
