@@ -19,7 +19,7 @@
         <link rel="stylesheet" href="./../styles/login.css" />
       </head>
     <body>
-        <div id="login" v-loading="loading">
+        <div id="login" v-loading="loading" style="display: none;" :style="{display: 'block'}">
             <div class="divHead">登录</div>
             <div class="divContainer">
                 <el-input placeholder=" 请输入手机号码" v-model="form.phone"  maxlength='20'/></el-input>
