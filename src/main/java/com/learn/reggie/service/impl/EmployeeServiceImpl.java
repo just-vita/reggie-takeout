@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.learn.reggie.entity.Employee;
 import com.learn.reggie.entity.PageParam;
+import com.learn.reggie.entity.QueryPageParam;
 import com.learn.reggie.mapper.EmployeeMapper;
 import com.learn.reggie.service.EmployeeService;
 import org.apache.commons.lang.StringUtils;
@@ -49,6 +50,16 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     @Override
     @Cacheable(key = "'page'")
     public Page<Employee> findAll(PageParam pageParam) {
+        Page<Employee> page = new Page<>(pageParam.getPage(), pageParam.getPageSize());
+        LambdaQueryWrapper<Employee> lqw = new LambdaQueryWrapper<>();
+        lqw.orderByDesc(Employee::getUpdateTime);
+        employeeMapper.selectPage(page, lqw);
+        return page;
+    }
+
+    @Override
+    @CacheEvict(beforeInvocation = true, key = "'page'")
+    public Page<Employee> findAll(QueryPageParam pageParam) {
         Page<Employee> page = new Page<>(pageParam.getPage(), pageParam.getPageSize());
         LambdaQueryWrapper<Employee> lqw = new LambdaQueryWrapper<>();
         lqw.like(

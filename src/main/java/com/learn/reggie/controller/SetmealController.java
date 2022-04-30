@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.learn.reggie.common.R;
 import com.learn.reggie.dto.SetmealDto;
 import com.learn.reggie.entity.PageParam;
+import com.learn.reggie.entity.QueryPageParam;
 import com.learn.reggie.entity.Setmeal;
 import com.learn.reggie.service.SetmealService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +20,20 @@ public class SetmealController {
     private SetmealService setmealService;
 
     @GetMapping("page")
-    public R<Page> page(PageParam pageParam) {
+    public R<Page<SetmealDto>> page(QueryPageParam queryPageParam) {
+        if (queryPageParam.getName() == null){
+            PageParam pageParam = new PageParam();
+            BeanUtils.copyProperties(queryPageParam,pageParam);
+            return page(pageParam);
+        }
+        Page<SetmealDto> page = setmealService.page(queryPageParam);
+        return R.success(page);
+    }
+
+    /***
+     * 因为缓存的原因，带查询条件时需要用一个新的方法来接收，实现带查询条件时缓存的清除
+     */
+    public R<Page<SetmealDto>> page(PageParam pageParam) {
         Page<SetmealDto> page = setmealService.page(pageParam);
         return R.success(page);
     }

@@ -12,7 +12,6 @@ import com.learn.reggie.mapper.DishMapper;
 import com.learn.reggie.mapper.SetmealMapper;
 import com.learn.reggie.service.CategoryService;
 import com.learn.reggie.utils.RedisUtil;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -38,10 +37,6 @@ public class CategoryServiceImpl implements CategoryService {
     public Page<Category> getPage(PageParam pageParam) {
         Page<Category> page = new Page<>(pageParam.getPage(), pageParam.getPageSize());
         LambdaQueryWrapper<Category> lqw = new LambdaQueryWrapper<>();
-        lqw.like(
-                StringUtils.isNotEmpty(pageParam.getName()),
-                Category::getName,
-                pageParam.getName());
         lqw.orderByDesc(Category::getUpdateTime);
         categoryMapper.selectPage(page, lqw);
         return page;

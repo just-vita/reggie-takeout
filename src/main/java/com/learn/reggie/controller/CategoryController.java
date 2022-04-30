@@ -18,7 +18,7 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @GetMapping("page")
-    public R<Page> getPage(PageParam pageParam){
+    public R<Page<Category>> getPage(PageParam pageParam){
         Page<Category> page = categoryService.getPage(pageParam);
         return R.success(page);
     }

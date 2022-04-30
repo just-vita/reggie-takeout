@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.learn.reggie.dto.SetmealDto;
-import com.learn.reggie.entity.Category;
-import com.learn.reggie.entity.PageParam;
-import com.learn.reggie.entity.Setmeal;
-import com.learn.reggie.entity.SetmealDish;
+import com.learn.reggie.entity.*;
 import com.learn.reggie.mapper.CategoryMapper;
 import com.learn.reggie.mapper.SetmealDishMapper;
 import com.learn.reggie.mapper.SetmealMapper;
@@ -40,6 +37,40 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
     @Override
     @Cacheable(key = "'page'")
     public Page<SetmealDto> page(PageParam pageParam) {
+        Page<SetmealDto> setmealDtoPage = new Page<>();
+        Page<Setmeal> page = new Page<>(
+                pageParam.getPage(),
+                pageParam.getPageSize());
+
+        LambdaQueryWrapper<Setmeal> lqw = new LambdaQueryWrapper<>();
+        lqw.orderByDesc(Setmeal::getUpdateTime);
+        setmealMapper.selectPage(page, lqw);
+
+        List<Setmeal> records = page.getRecords();
+        List<SetmealDto> setmealDtoList = records.stream().map((item)->{
+            SetmealDto setmealDto = new SetmealDto();
+            BeanUtils.copyProperties(item,setmealDto);
+
+            LambdaQueryWrapper<SetmealDish> setmealDishLqw = new LambdaQueryWrapper<>();
+            setmealDishLqw.eq(SetmealDish::getSetmealId,setmealDto.getId());
+            List<SetmealDish> setmealDishList = setmealDishMapper.selectList(setmealDishLqw);
+            setmealDto.setSetmealDishes(setmealDishList);
+
+            Long categoryId = setmealDto.getCategoryId();
+            Category category = categoryMapper.selectById(categoryId);
+            setmealDto.setCategoryName(category.getName());
+            return setmealDto;
+        }).collect(Collectors.toList());
+
+        BeanUtils.copyProperties(page,setmealDtoPage,"records");
+        setmealDtoPage.setRecords(setmealDtoList);
+
+        return setmealDtoPage;
+    }
+
+    @Override
+    @CacheEvict(beforeInvocation = true, key = "'page'")
+    public Page<SetmealDto> page(QueryPageParam pageParam) {
         Page<SetmealDto> setmealDtoPage = new Page<>();
         Page<Setmeal> page = new Page<>(
                 pageParam.getPage(),

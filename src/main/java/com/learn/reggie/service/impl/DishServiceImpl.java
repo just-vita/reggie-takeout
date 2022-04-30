@@ -3,10 +3,7 @@ package com.learn.reggie.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.learn.reggie.dto.DishDto;
-import com.learn.reggie.entity.Category;
-import com.learn.reggie.entity.Dish;
-import com.learn.reggie.entity.DishFlavor;
-import com.learn.reggie.entity.PageParam;
+import com.learn.reggie.entity.*;
 import com.learn.reggie.mapper.CategoryMapper;
 import com.learn.reggie.mapper.DishFlavorMapper;
 import com.learn.reggie.mapper.DishMapper;
@@ -41,6 +38,38 @@ public class DishServiceImpl implements DishService {
     @Override
     @Cacheable(key = "'page'")
     public Page<DishDto> page(PageParam pageParam) {
+        Page<DishDto> dishDtoPage = new Page<>();
+        Page<Dish> page = new Page<>(
+                pageParam.getPage(),
+                pageParam.getPageSize());
+
+        LambdaQueryWrapper<Dish> lqw = new LambdaQueryWrapper<>();
+        lqw.orderByDesc(Dish::getUpdateTime);
+        dishMapper.selectPage(page, lqw);
+
+        // 因为dish实体类中没有分类名称字段，所以使用DTO对象返回，将分类名称设置进DTO的page对象中
+        List<Dish> dishList = page.getRecords();
+        List<DishDto> dishDtoList = dishList.stream().map((item) -> {
+            DishDto dishDto = new DishDto();
+            BeanUtils.copyProperties(item, dishDto);
+
+            Long categoryId = item.getCategoryId();
+            Category category = categoryMapper.selectById(categoryId);
+            String categoryName = category.getName();
+
+            dishDto.setCategoryName(categoryName);
+            return dishDto;
+        }).collect(Collectors.toList());
+
+        BeanUtils.copyProperties(page,dishDtoPage,"records");
+        dishDtoPage.setRecords(dishDtoList);
+
+        return dishDtoPage;
+    }
+
+    @Override
+    @CacheEvict(beforeInvocation = true, key = "'page'")
+    public Page<DishDto> page(QueryPageParam pageParam) {
         Page<DishDto> dishDtoPage = new Page<>();
         Page<Dish> page = new Page<>(
                 pageParam.getPage(),

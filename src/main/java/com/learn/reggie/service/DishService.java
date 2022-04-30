@@ -3,11 +3,14 @@ package com.learn.reggie.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.learn.reggie.dto.DishDto;
 import com.learn.reggie.entity.PageParam;
+import com.learn.reggie.entity.QueryPageParam;
 
 import java.util.List;
 
 public interface DishService {
     Page<DishDto> page(PageParam pageParam);
+
+    Page<DishDto> page(QueryPageParam pageParam);
 
     String add(DishDto dishDto);
 

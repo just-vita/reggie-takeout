@@ -48,10 +48,10 @@ public class OrderServiceImpl implements OrderService {
 
         //查询当前用户的购物车数据
         LambdaQueryWrapper<ShoppingCart> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(ShoppingCart::getUserId,userId);
+        wrapper.eq(ShoppingCart::getUserId, userId);
         List<ShoppingCart> shoppingCarts = shoppingCartMapper.selectList(wrapper);
 
-        if(shoppingCarts == null || shoppingCarts.size() == 0){
+        if (shoppingCarts == null || shoppingCarts.size() == 0) {
             throw new CustomException("购物车为空，不能下单");
         }
 
@@ -61,7 +61,7 @@ public class OrderServiceImpl implements OrderService {
         //查询地址数据
         Long addressBookId = orders.getAddressBookId();
         AddressBook addressBook = addressBookMapper.selectById(addressBookId);
-        if(addressBook == null){
+        if (addressBook == null) {
             throw new CustomException("用户地址信息有误，不能下单");
         }
 
@@ -117,12 +117,12 @@ public class OrderServiceImpl implements OrderService {
         LambdaQueryWrapper<Orders> lqw = new LambdaQueryWrapper<>();
         lqw.eq(Orders::getUserId, CommonThreadLocal.getUser());
         lqw.orderByDesc(Orders::getOrderTime);
-        orderMapper.selectPage(ordersPage,lqw);
+        orderMapper.selectPage(ordersPage, lqw);
 
         List<Orders> ordersList = ordersPage.getRecords();
-        List<OrderDto> orderDtoLIst = ordersList.stream().map((item)->{
+        List<OrderDto> orderDtoLIst = ordersList.stream().map((item) -> {
             OrderDto orderDto = new OrderDto();
-            BeanUtils.copyProperties(item,orderDto);
+            BeanUtils.copyProperties(item, orderDto);
 
             LambdaQueryWrapper<Orders> orderLQW = new LambdaQueryWrapper<>();
             orderLQW.eq(Orders::getUserId, CommonThreadLocal.getUser());
@@ -138,7 +138,7 @@ public class OrderServiceImpl implements OrderService {
         }).collect(Collectors.toList());
 
         Page<OrderDto> orderDtoPage = new Page<>();
-        BeanUtils.copyProperties(ordersPage,orderDtoPage,"records");
+        BeanUtils.copyProperties(ordersPage, orderDtoPage, "records");
 
         orderDtoPage.setRecords(orderDtoLIst);
 
@@ -151,15 +151,33 @@ public class OrderServiceImpl implements OrderService {
         Page<Orders> ordersPage = new Page<Orders>(pageParam.getPage(), pageParam.getPageSize());
         LambdaQueryWrapper<Orders> lqw = new LambdaQueryWrapper<>();
         lqw.orderByDesc(Orders::getOrderTime);
-        orderMapper.selectPage(ordersPage,lqw);
+        orderMapper.selectPage(ordersPage, lqw);
         List<Orders> ordersList = ordersPage.getRecords();
-        ordersList = ordersList.stream().map((item)->{
+        ordersList = ordersList.stream().map((item) -> {
             item.setUserName((item.getId().toString()));
             return item;
         }).collect(Collectors.toList());
         ordersPage.setRecords(ordersList);
         return ordersPage;
     }
+
+    @Override
+    @CacheEvict(beforeInvocation = true, key = "'page'")
+    public Page<Orders> page(QueryPageParam pageParam) {
+            Page<Orders> ordersPage = new Page<Orders>(pageParam.getPage(), pageParam.getPageSize());
+            LambdaQueryWrapper<Orders> lqw = new LambdaQueryWrapper<>();
+            lqw.eq(pageParam.getNumber() != null, Orders::getId, pageParam.getNumber());
+            lqw.between(pageParam.getBeginTime() != null,Orders::getOrderTime, pageParam.getBeginTime(), pageParam.getEndTime());
+            lqw.orderByDesc(Orders::getOrderTime);
+            orderMapper.selectPage(ordersPage, lqw);
+            List<Orders> ordersList = ordersPage.getRecords();
+            ordersList = ordersList.stream().map((item) -> {
+                item.setUserName((item.getId().toString()));
+                return item;
+            }).collect(Collectors.toList());
+            ordersPage.setRecords(ordersList);
+            return ordersPage;
+        }
 
     @Override
     @CacheEvict(key = "'page'")
