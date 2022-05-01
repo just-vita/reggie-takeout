@@ -54,15 +54,22 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         String str = "{\"code\":0,\"msg\":\"NOTLOGIN\"}";
         byte[] b=str.getBytes();
 
+        // 如果redis中不仅存储了token，也存储了用户信息的话，清除用户信息以免拦截器出问题
+        if (requestURI.contains("page")){
+            log.info("backend...");
+            redisUtil.remove("loginUser");
+        }
+
         Long user = (Long) redisUtil.get("loginUser");
-        if (user != null) {
+        if (user != null){
+            log.info("front...");
             CommonThreadLocal.setUserLocal(user);
             filterChain.doFilter(request, response);
             return;
         }
 
         if (Objects.isNull(token) || "null".equals(token)){
-//            log.error("用户未登录 token不存在");
+//            log.error("用户未登录 未携带token");
             outputStream.write(b);
             outputStream.close();
             return;

@@ -27,7 +27,7 @@ public class AddressBookServiceImpl extends ServiceImpl<AddressBookMapper,Addres
     public List<AddressBook> AddressList() {
         LambdaQueryWrapper<AddressBook> lqw = new LambdaQueryWrapper<>();
         lqw.eq(AddressBook::getUserId, CommonThreadLocal.getUser());
-        lqw.orderByDesc(AddressBook::getUpdateTime);
+        lqw.orderByDesc(AddressBook::getIsDefault);
         return addressBookMapper.selectList(lqw);
     }
 
