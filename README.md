@@ -6,7 +6,7 @@
 
 #### 软件架构
 软件架构说明
-SpringBoot + Mybatis-Plus + Mysql + Redis
+SpringBoot + Mybatis-Plus + Mysql + Redis + SpringCache  
 Spring Security + Jwt 权限认证
 
 
