@@ -34,6 +34,7 @@
             @click="handleQuery"
           ></i>
         </el-input>
+        <el-button type="primary" class="search-btn" @click="init" style="margin-left: -600px;">查询</el-button>
         <el-button
           type="primary"
           @click="addMemberHandle('add')"
@@ -74,7 +75,6 @@
               size="small"
               class="blueBug"
               @click="addMemberHandle(scope.row.id)"
-              :class="{notAdmin:user !== 'admin'}"
             >
               编辑
             </el-button>
@@ -83,7 +83,6 @@
               size="small"
               class="delBut non"
               @click="statusHandle(scope.row)"
-              v-if="user === 'admin'"
             >
               {{ scope.row.status == '1' ? '禁用' : '启用' }}
             </el-button>
@@ -127,7 +126,6 @@
         computed: {},
         created() {
           this.init()
-          this.user = JSON.parse(localStorage.getItem('userInfo')).username
         },
         mounted() {
         },
@@ -144,7 +142,7 @@
                 this.counts = res.data.total
               }
             }).catch(err => {
-              this.$message.error('请求出错了：' + err)
+              this.$message.error('权限不足，无法进入')
             })
           },
           handleQuery() {

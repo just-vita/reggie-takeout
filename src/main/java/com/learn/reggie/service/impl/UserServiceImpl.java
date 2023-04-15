@@ -8,11 +8,10 @@ import com.learn.reggie.entity.User;
 import com.learn.reggie.mapper.UserMapper;
 import com.learn.reggie.service.UserService;
 import com.learn.reggie.utils.CodeUtils;
+import com.learn.reggie.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 @Service
@@ -21,9 +20,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
     @Autowired
-    private HttpServletRequest request;
-    @Autowired
     private CodeUtils codeUtils;
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Override
     public R<String> sendMsg(User user) {
@@ -47,8 +46,9 @@ public class UserServiceImpl implements UserService {
                 user.setStatus(1);
                 userMapper.insert(user);
             }
+            CommonThreadLocal.removeEmployee();
             CommonThreadLocal.setUserLocal(user.getId());
-            request.getSession().setAttribute("user",user.getId());
+            redisUtil.set("loginUser", user.getId());
             return R.success(user);
         }
         return R.error("验证码有误");
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public R<String> loginout() {
-        request.getSession().removeAttribute("user");
+        redisUtil.remove("loginUser");
         return R.success("退出成功");
     }
 }

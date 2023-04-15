@@ -19,6 +19,7 @@ public class WebConfig extends WebMvcConfigurationSupport {
         log.info("static resource reflect...");
         registry.addResourceHandler("/backend/**").addResourceLocations("classpath:/backend/");
         registry.addResourceHandler("/front/**").addResourceLocations("classpath:/front/");
+        registry.addResourceHandler("/**").addResourceLocations("classpath:/");
     }
 
     @Override

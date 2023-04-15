@@ -15,6 +15,7 @@ public class GlobalExceptionHandler {
             String msg = split[2] + "已存在";
             return R.error(msg);
         }
+        e.printStackTrace();
         return R.error("未知错误");
     }
 

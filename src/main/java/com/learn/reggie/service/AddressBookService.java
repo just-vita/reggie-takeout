@@ -8,17 +8,17 @@ import java.util.List;
 
 public interface AddressBookService extends IService<AddressBook> {
 
-    R<List<AddressBook>> AddressList();
+    List<AddressBook> AddressList();
 
-    R<String> add(AddressBook addressBook);
+    String add(AddressBook addressBook);
 
-    R<String> setDefault(AddressBook addressBook);
+    String setDefault(AddressBook addressBook);
 
-    R<AddressBook> getDefault();
+    AddressBook getDefault();
 
-    R<String> update(AddressBook addressBook);
+    String update(AddressBook addressBook);
 
-    R<String> delete(AddressBook addressBook);
+    String delete(AddressBook addressBook);
 
-    R<AddressBook> getById(Long id);
+    AddressBook getById(Long id);
 }

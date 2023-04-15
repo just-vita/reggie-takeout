@@ -1,11 +1,16 @@
 (function (win) {
-  axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
+  axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8';
+  let item = localStorage.getItem("token");
+  if (item != null){
+    axios.defaults.headers['token'] = item;
+  }
+
   // 创建axios实例
   const service = axios.create({
     // axios中请求配置有baseURL选项，表示请求URL公共部分
     baseURL: '/',
     // 超时
-    timeout: 10000
+    timeout: 10000,
   })
   // request拦截器
   service.interceptors.request.use(config => {
@@ -35,6 +40,9 @@
       url = url.slice(0, -1);
       config.params = {};
       config.url = url;
+      config.headers = {
+        "token" : localStorage.getItem("token")
+      }
     }
     return config
   }, error => {
@@ -47,8 +55,8 @@
       if (res.data.code === 0 && res.data.msg === 'NOTLOGIN') {// 返回登录页面
         console.log(res.data.msg)
         console.log('---/backend/page/login/login.html---')
-        localStorage.removeItem('userInfo')
-        window.top.location.href = '/backend/page/login/login.html'
+        localStorage.removeItem('token')
+        window.top.location.href = '/login.html'
       } else {
         return res.data
       }
@@ -73,5 +81,5 @@
       return Promise.reject(error)
     }
   )
-  win.$axios = service
+ win.$axios = service
 })(window);

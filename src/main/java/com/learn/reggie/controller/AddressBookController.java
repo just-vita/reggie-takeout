@@ -17,36 +17,43 @@ public class AddressBookController {
 
     @GetMapping("list")
     public R<List<AddressBook>> list(){
-        return addressBookService.AddressList();
+        List<AddressBook> addressBookList = addressBookService.AddressList();
+        return R.success(addressBookList);
     }
 
     @PostMapping
     public R<String> add(@RequestBody AddressBook addressBook){
-        return addressBookService.add(addressBook);
+        String info = addressBookService.add(addressBook);
+        return R.success(info);
     }
 
     @PutMapping("default")
     public R<String> setDefault(@RequestBody AddressBook addressBook){
-        return addressBookService.setDefault(addressBook);
+        String info = addressBookService.setDefault(addressBook);
+        return R.success(info);
     }
 
     @GetMapping("default")
     public R<AddressBook> getDefault(){
-        return addressBookService.getDefault();
+        AddressBook addressBook = addressBookService.getDefault();
+        return R.success(addressBook);
     }
 
     @PutMapping
     public R<String> update(@RequestBody AddressBook addressBook){
-        return addressBookService.update(addressBook);
+        String info = addressBookService.update(addressBook);
+        return R.success(info);
     }
 
     @DeleteMapping
     public R<String> delete(@RequestBody AddressBook addressBook){
-        return addressBookService.delete(addressBook);
+        String info = addressBookService.delete(addressBook);
+        return R.success(info);
     }
 
     @GetMapping("{id}")
     public R<AddressBook> getById(@PathVariable("id") Long id){
-        return addressBookService.getById(id);
+        AddressBook addressBook = addressBookService.getById(id);
+        return R.success(addressBook);
     }
 }

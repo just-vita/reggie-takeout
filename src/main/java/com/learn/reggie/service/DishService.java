@@ -1,24 +1,26 @@
 package com.learn.reggie.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.learn.reggie.common.R;
 import com.learn.reggie.dto.DishDto;
 import com.learn.reggie.entity.PageParam;
+import com.learn.reggie.entity.QueryPageParam;
 
 import java.util.List;
 
 public interface DishService {
-    R<Page> page(PageParam pageParam);
+    Page<DishDto> page(PageParam pageParam);
 
-    R<String> add(DishDto dishDto);
+    Page<DishDto> page(QueryPageParam pageParam);
 
-    R<DishDto> getById(Long id);
+    String add(DishDto dishDto);
 
-    R<String> update(DishDto dishDto);
+    DishDto getById(Long id);
 
-    R<String> delete(String ids);
+    String update(DishDto dishDto);
 
-    R<String> changeStatus(Integer status, String ids);
+    String delete(String ids);
 
-    R<List<DishDto>> list(Long categoryId);
+    String changeStatus(Integer status, String ids);
+
+    List<DishDto> list(Long categoryId);
 }

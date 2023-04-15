@@ -13,13 +13,22 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     public void insertFill(MetaObject metaObject) {
         metaObject.setValue("createTime", LocalDateTime.now());
         metaObject.setValue("updateTime", LocalDateTime.now());
-        metaObject.setValue("createUser", CommonThreadLocal.getEmployee());
-        metaObject.setValue("updateUser", CommonThreadLocal.getEmployee());
+        if (CommonThreadLocal.getEmployee() != null){
+            metaObject.setValue("createUser", CommonThreadLocal.getEmployee());
+            metaObject.setValue("updateUser", CommonThreadLocal.getEmployee());
+        }else{
+            metaObject.setValue("createUser", CommonThreadLocal.getUser());
+            metaObject.setValue("updateUser", CommonThreadLocal.getUser());
+        }
     }
 
     @Override
     public void updateFill(MetaObject metaObject) {
         metaObject.setValue("updateTime", LocalDateTime.now());
-        metaObject.setValue("updateUser", CommonThreadLocal.getEmployee());
+        if (CommonThreadLocal.getEmployee() != null){
+            metaObject.setValue("updateUser", CommonThreadLocal.getEmployee());
+        }else{
+            metaObject.setValue("updateUser", CommonThreadLocal.getUser());
+        }
     }
 }

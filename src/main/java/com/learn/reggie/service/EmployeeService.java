@@ -2,22 +2,21 @@ package com.learn.reggie.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.learn.reggie.common.R;
 import com.learn.reggie.entity.Employee;
 import com.learn.reggie.entity.PageParam;
-
-import javax.servlet.http.HttpServletRequest;
+import com.learn.reggie.entity.QueryPageParam;
 
 public interface EmployeeService extends IService<Employee> {
-    R<Employee> login(HttpServletRequest request, Employee employee);
 
-    R<String> logout();
+    String logout();
 
-    R<String> add(Employee employee);
+    String add(Employee employee);
 
-    R<Page> findAll(PageParam pageParam);
+    Page<Employee> findAll(PageParam pageParam);
 
-    R<String> changeStatus(Employee employee);
+    Page<Employee> findAll(QueryPageParam pageParam);
 
-    R<Employee> getEmployeeById(Long id);
+    String changeStatus(Employee employee);
+
+    Employee getEmployeeById(Long id);
 }

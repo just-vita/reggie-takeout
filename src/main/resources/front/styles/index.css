@@ -67,19 +67,12 @@ i {
   font-style: normal;
 }
 
-@font-face {
-  font-family: "PingFangSC-Regular";
-  src: url("../fonts/PingFangSC-Regular.ttf");
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "PingFangSC-Regular";
-  src: url("../fonts/PingFangSC-Regular.ttf");
-  font-weight: normal;
-  font-style: normal;
-}
+/*@font-face {*/
+/*  font-family: "PingFangSC-Regular";*/
+/*  src: url("../fonts/PingFangSC-Regular.ttf");*/
+/*  font-weight: normal;*/
+/*  font-style: normal;*/
+/*}*/
 
 @font-face {
   font-family: "PingFangSC-Semibold";
