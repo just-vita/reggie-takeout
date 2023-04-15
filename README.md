@@ -10,6 +10,6 @@ SpringBoot + Mybatis-Plus + Mysql + Redis + SpringCache
 Spring Security + Jwt 权限认证
 
 #### 2023/4/15 上传到GitHub
-事实证明并来没有更新这个项目，乐
+事实证明并没有继续更新这个项目，乐
 
 
